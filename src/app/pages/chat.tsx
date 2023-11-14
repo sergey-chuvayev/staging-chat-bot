@@ -4,39 +4,32 @@ import React, { useEffect, useRef, useState } from "react";
 import { Callout } from "../components/shared/Callout";
 import { Message } from "../components/Message";
 import { ConversationEntry } from "../types/chat";
-import { TypingMessage } from "../components/TypingMessage/TypingMessage";
+import { MessageGenerator } from "../components/MessageGenerator/MessageGenerator";
+import { UserInput } from "../components/UserInput";
+import { mockConversation } from "./mock";
+import { TypingIndicator } from "../components/TypingIndicator";
 
 export const Chat = () => {
-  const [conversation, setConversation] = useState<ConversationEntry[]>([]);
+  const [conversation, setConversation] =
+    useState<ConversationEntry[]>([]);
   const [isMessageGenerating, setIsMessageGenerating] = useState(false);
-  const [isMessageProcessing, setIsMessageProcessing] = useState(false);
-  const [userInputText, setUserInputText] = useState("");
+  const [isMessageRequestSent, setIsMessageRequestSent] = useState(false);
   const [userId, setUserId] = useState("");
   const [error, setError] = useState<null | string>(null);
-  const scrollViewRef = useRef<HTMLDivElement>(null);
+  const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setUserId(localStorage.getItem("userId") ?? "");
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
-  const submit = async () => {
-    if (userInputText.trim() === "") return;
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [conversation]);
 
+  const submit = async (message: string) => {
     setError(null);
-    setConversation((state) => [
-      ...state,
-      {
-        message: userInputText,
-        speaker: "user",
-        date: new Date(),
-      },
-    ]);
-
-    setIsMessageProcessing(true);
-    setUserInputText("");
+    setIsMessageRequestSent(true);
     try {
       const response = await fetch(
         "https://chat-vitiligo.onrender.com/question.ask",
@@ -47,28 +40,28 @@ export const Chat = () => {
           },
           body: JSON.stringify({
             chatType: "streamed",
-            content: userInputText,
+            content: message,
             from: userId, // generate some name (not authentication yet)
           }),
         }
       );
 
-      setIsMessageProcessing(false);
+      setIsMessageRequestSent(false);
       setIsMessageGenerating(true);
 
       if (response.status === 500) {
-        setIsMessageProcessing(false);
+        setIsMessageRequestSent(false);
         setError("Server error: Please try again later.");
         return;
       }
 
       if (!response.ok) {
-        setIsMessageProcessing(false);
+        setIsMessageRequestSent(false);
         setError("Something went wrong. Please try again.");
         return;
       }
     } catch (error) {
-      setIsMessageProcessing(false);
+      setIsMessageRequestSent(false);
       setError(
         "Failed to send the message. Please check your internet connection and try again."
       );
@@ -89,55 +82,52 @@ export const Chat = () => {
     setIsMessageGenerating(false);
   };
 
+  const handleUserMessageSubmit = (message: string) => {
+    setConversation((state) => [
+      ...state,
+      {
+        message,
+        speaker: "user",
+        date: new Date(),
+      },
+    ]);
+    submit(message);
+  };
+
   return (
     <div className="flex flex-col h-full">
-      <div className="flex flex-col flex-grow">
-        <div className="flex-grow flex flex-col justify-end">
-          <div
-            className="flex flex-col flex-grow overflow-y-auto"
-            ref={scrollViewRef}
-          >
-            {conversation.map((entry) => (
-              <Message entry={entry} key={Math.random().toString()} />
-            ))}
-            {isMessageGenerating && (
-              <TypingMessage
-                userId={userId}
-                onError={setError}
-                onMessageEnded={handleMessageEnded}
-              />
-            )}
+      <div className="flex-grow flex flex-col overflow-y-auto">
+        <div className="flex flex-col flex-grow gap-[31px] py-[24px]">
+          {conversation.map((entry) => (
+            <Message
+              text={entry.message}
+              className="mx-[24px]"
+              speaker={entry.speaker}
+              key={Math.random().toString()}
+            />
+          ))}
+          {isMessageRequestSent && <TypingIndicator className="ml-[24px]" />}
+          {isMessageGenerating && (
+            <MessageGenerator
+              className="mx-[24px]"
+              userId={userId}
+              onError={setError}
+              onMessageEnded={handleMessageEnded}
+            />
+          )}
+        </div>
+        {error && (
+          <div className="flex flex-row justify-center">
+            <Callout className="-mt-[25px] m-[25px]" type="error" message={error} />
           </div>
-        </div>
-        <form id="chat-form" className="flex flex-row mt-auto">
-          <input
-            className="flex-grow p-4"
-            type="text"
-            form="chat-form"
-            placeholder="Type your message here..."
-            value={userInputText}
-            onChange={(event) => setUserInputText(event.target.value)}
-            onKeyPress={(event) => {
-              if (event.key === "Enter") {
-                submit();
-              }
-            }}
-          />
-          <button
-            className="p-4 bg-blue-500 text-white"
-            onClick={() => submit()}
-            type="submit"
-            disabled={isMessageProcessing || isMessageGenerating}
-          >
-            icon
-          </button>
-        </form>
+        )}
+        <div ref={endOfMessagesRef} />
       </div>
-      {error && (
-        <div className="flex flex-row justify-center">
-          <Callout type="error" message={error} />
-        </div>
-      )}
+      <UserInput
+        className="mt-auto p-m pt-[1px]"
+        isDisabled={isMessageRequestSent || isMessageGenerating}
+        onSubmit={handleUserMessageSubmit}
+      />
     </div>
   );
 };

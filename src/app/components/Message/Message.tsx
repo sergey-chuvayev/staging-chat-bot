@@ -2,24 +2,31 @@ import React from "react";
 import Markdown from "react-markdown";
 
 import { ConversationEntry } from "../../types/chat";
+import classNames from "classnames";
 
 type Props = {
-  entry: ConversationEntry;
+  text: string;
+  className?: string;
+  speaker: ConversationEntry["speaker"];
 };
 
-export const Message = ({ entry }: Props) => {
-  const messageStyle = entry.speaker === "user" ? "messageUser" : "messageBot";
-
-  const content = entry.speaker === "user" ? (
-    <p className="text-gray-900">{entry.message}</p>
-  ) : (
-    <div className="markdown">
-      <Markdown>{entry.message}</Markdown>
-    </div>
-  );
+export const Message = ({ text, speaker, className }: Props) => {
+  const content = speaker === "user" ? text : <Markdown>{text}</Markdown>;
 
   return (
-    <div className={`${messageStyle} message`}>
+    <div
+      className={classNames(
+        className,
+        "body-l text-[#181818]",
+        {
+          "rounded-[8px] bg-[#d5d5d5] max-w-[268px] self-end py-[10px] px-[15px]":
+            speaker === "user",
+        },
+        {
+          "max-w-[314px] self-start": speaker === "bot",
+        }
+      )}
+    >
       {content}
     </div>
   );
