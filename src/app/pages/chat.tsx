@@ -95,7 +95,7 @@ export const Chat = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-w-[780px] m-0 mx-auto">
       <div className="flex-grow flex flex-col overflow-y-auto">
         <div className="flex flex-col flex-grow gap-[31px] py-[24px]">
           {conversation.map((entry) => (
