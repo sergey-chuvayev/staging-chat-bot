@@ -20,6 +20,11 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
     }
   };
 
+  const handleSubmit = (text: string) => {
+    onSubmit(text);
+    setText("");
+  };
+
   return (
     <div className={className}>
       <form
@@ -32,14 +37,14 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
           placeholder="Ask me anything"
           value={text}
           rows={1}
-          style={{ resize: 'none' }} // Disables manual resizing
+          style={{ resize: "none" }} // Disables manual resizing
           onChange={(event) => {
             adjustTextAreaRows(event.target);
             setText(event.target.value);
           }}
         />
         <button
-          onClick={() => onSubmit(text)}
+          onClick={() => handleSubmit(text)}
           className="pr-[14px] mb-[8px]"
           type="submit"
           disabled={isDisabled}
