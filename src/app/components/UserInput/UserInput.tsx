@@ -42,6 +42,12 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
             adjustTextAreaRows(event.target);
             setText(event.target.value);
           }}
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              handleSubmit(text);
+            }
+          }}
         />
         <button
           onClick={() => handleSubmit(text)}
