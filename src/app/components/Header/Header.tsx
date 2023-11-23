@@ -48,7 +48,7 @@ const Icon = ({ name }: { name: string }) => {
     return null;
   }
   return (
-    <div className="flex items-center justify-center w-[40px] h-[40px] rounded-[8px] bg-[#f2f2f2]">
+    <div className="flex items-center justify-center w-[40px] h-[40px] rounded-[8px] bg-[#f2f2f2] cursor-pointer">
       {iconSvg}
     </div>
   );
