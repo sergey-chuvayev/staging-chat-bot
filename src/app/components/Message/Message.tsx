@@ -27,11 +27,11 @@ export const Message = ({ text, speaker, className }: Props) => {
         styles.message,
         "body-l text-[#181818] text-[18px]",
         {
-          "rounded-[8px] bg-[#d5d5d5] max-w-[268px] self-end py-[10px] px-[15px]":
+          "rounded-[8px] bg-[#d5d5d5] max-w-[70%] self-end py-[10px] px-[15px]":
             speaker === "user",
         },
         {
-          "max-w-[314px] self-start": speaker === "bot",
+          "max-w-[85%] self-start": speaker === "bot",
         }
       )}
     >

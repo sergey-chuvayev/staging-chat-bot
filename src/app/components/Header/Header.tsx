@@ -10,7 +10,7 @@ export const Header = ({ className }: Props) => {
     <div className={className}>
       <div
         className={classNames(
-          "flex items-center justify-between p-m",
+          "flex items-center justify-between p-m pt-l",
           styles.headerBackdrop
         )}
       >

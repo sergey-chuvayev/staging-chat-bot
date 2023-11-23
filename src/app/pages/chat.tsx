@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import classNames from "classnames";
 
 import { Callout } from "../components/shared/Callout";
 import { Message } from "../components/Message";
@@ -9,6 +10,8 @@ import { UserInput } from "../components/UserInput";
 import { mockConversation } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
+import styles from "./styles.module.css";
+
 
 export const Chat = () => {
   const [conversation, setConversation] =
@@ -97,7 +100,7 @@ export const Chat = () => {
 
   return (
     <div className="flex flex-col h-full max-w-[780px] m-0 mx-auto">
-      <Header className="fixed top-0 left-0 w-full" />
+      <Header className={classNames("fixed top-0 left-0 w-full max-w-[780px]", styles.header)} />
       <div className="flex-grow flex flex-col overflow-y-auto">
         <div className="flex flex-col flex-grow gap-[31px] py-[24px] pt-[100px]">
           {conversation.map((entry) => (
@@ -120,7 +123,11 @@ export const Chat = () => {
         </div>
         {error && (
           <div className="flex flex-row justify-center">
-            <Callout className="-mt-[25px] m-[25px]" type="error" message={error} />
+            <Callout
+              className="-mt-[25px] m-[25px]"
+              type="error"
+              message={error}
+            />
           </div>
         )}
         <div ref={endOfMessagesRef} />
