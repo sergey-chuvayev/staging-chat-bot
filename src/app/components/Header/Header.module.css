@@ -1,0 +1,4 @@
+.headerBackdrop {
+  backdrop-filter: blur(10px);
+  background: rgb(255 255 255 / 80%);
+}

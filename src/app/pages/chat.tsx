@@ -8,10 +8,11 @@ import { MessageGenerator } from "../components/MessageGenerator/MessageGenerato
 import { UserInput } from "../components/UserInput";
 import { mockConversation } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
+import { Header } from "../components/Header";
 
 export const Chat = () => {
   const [conversation, setConversation] =
-    useState<ConversationEntry[]>([]);
+    useState<ConversationEntry[]>(mockConversation);
   const [isMessageGenerating, setIsMessageGenerating] = useState(false);
   const [isMessageRequestSent, setIsMessageRequestSent] = useState(false);
   const [userId, setUserId] = useState("");
@@ -96,8 +97,9 @@ export const Chat = () => {
 
   return (
     <div className="flex flex-col h-full max-w-[780px] m-0 mx-auto">
+      <Header className="fixed top-0 left-0 w-full" />
       <div className="flex-grow flex flex-col overflow-y-auto">
-        <div className="flex flex-col flex-grow gap-[31px] py-[24px]">
+        <div className="flex flex-col flex-grow gap-[31px] py-[24px] pt-[100px]">
           {conversation.map((entry) => (
             <Message
               text={entry.message}

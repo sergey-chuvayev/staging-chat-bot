@@ -42,6 +42,10 @@ const config: Config = {
         m: "16px",
         s: "14px",
       },
+      rounded: {
+        s: "4px",
+        m: "8px",
+      },
     },
   },
   plugins: [],
