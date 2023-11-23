@@ -58,7 +58,7 @@ export const MessageGenerator = ({
   };
 
   return (
-    <div className={classNames("max-w-[314px] self-start", className)}>
+    <div className={classNames("max-w-[314px] self-start text-[18px]", className)}>
       {segments.map((segment, index) => (
         <span key={index} className={styles.fadeIn}>
           {segment}

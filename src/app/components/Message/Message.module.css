@@ -1,0 +1,12 @@
+.message p {
+  margin-bottom: 8px;
+}
+
+.message li {
+  margin-bottom: 8px;
+}
+
+.message a {
+  color: #3b3bc3;
+  text-decoration: underline;
+}
