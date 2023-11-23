@@ -10,8 +10,6 @@ import { UserInput } from "../components/UserInput";
 import { mockConversation } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
-import styles from "./styles.module.css";
-
 
 export const Chat = () => {
   const [conversation, setConversation] =

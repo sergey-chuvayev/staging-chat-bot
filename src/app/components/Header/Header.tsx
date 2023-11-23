@@ -7,16 +7,10 @@ type Props = {
 
 export const Header = ({ className }: Props) => {
   return (
-    <div
-      className={classNames(
-        className,
-        styles.headerBackdrop,
-        "flex justify-center"
-      )}
-    >
+    <div className={classNames(className, styles.headerBackdrop)}>
       <div
         className={classNames(
-          "flex items-center justify-between p-m pt-l w-[780px]"
+          "flex items-center justify-between p-m pt-l"
         )}
       >
         <Icon name="home" />
