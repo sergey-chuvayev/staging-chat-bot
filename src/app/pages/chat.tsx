@@ -100,7 +100,7 @@ export const Chat = () => {
 
   return (
     <div className="flex flex-col h-full max-w-[780px] m-0 mx-auto">
-      <Header className={classNames("fixed top-0 left-0 w-full max-w-[780px]", styles.header)} />
+      <Header className={classNames("fixed top-0 left-0 w-full")} />
       <div className="flex-grow flex flex-col overflow-y-auto">
         <div className="flex flex-col flex-grow gap-[31px] py-[24px] pt-[100px]">
           {conversation.map((entry) => (
