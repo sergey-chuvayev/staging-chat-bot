@@ -1,4 +1,5 @@
-import { ChangeEvent, useState } from "react";
+import classNames from "classnames";
+import { useState } from "react";
 
 type Props = {
   isDisabled: boolean;
@@ -26,10 +27,10 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
   };
 
   return (
-    <div className={className}>
+    <div className={classNames(className, "flex justify-center")}>
       <form
         id="chat-form"
-        className="flex items-end rounded-[30px] border-[2px] border-[#656366] bg-white"
+        className="flex items-end rounded-[30px] border-[2px] border-[#656366] bg-white w-[740px]"
       >
         <textarea
           className="flex-grow bg-transparent px-[15px] py-[11px] outline-none body-m"
@@ -43,7 +44,7 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
             setText(event.target.value);
           }}
           onKeyPress={(event) => {
-            if (event.key === 'Enter') {
+            if (event.key === "Enter") {
               event.preventDefault();
               handleSubmit(text);
             }

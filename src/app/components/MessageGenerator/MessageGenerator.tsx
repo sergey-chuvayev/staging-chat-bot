@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { ReactChildren, ReactNode, useEffect, useState } from "react";
 import { supabase } from "../../utils/supabase";
 
 import styles from "./MessageGenerator.module.css";
 import classNames from "classnames";
+import Markdown from "react-markdown";
 
 type StreamPayload = {
   [key: string]: any;
@@ -58,12 +59,16 @@ export const MessageGenerator = ({
   };
 
   return (
-    <div className={classNames("max-w-[85%] self-start text-[18px]", className)}>
-      {segments.map((segment, index) => (
-        <span key={index} className={styles.fadeIn}>
-          {segment}
-        </span>
-      ))}
-    </div>
+    <div
+      className={classNames("max-w-[85%] self-start text-[18px]", className)}
+    >
+      <Markdown components={{ p: FadeIn, li: FadeIn, a: FadeIn }}>
+        {segments.join("")}
+      </Markdown>
+    </div >
   );
 };
+
+const FadeIn = ({ children }: { children?: ReactNode }) => (
+  <div className={styles.fadeIn}>{children}</div>
+);

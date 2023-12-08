@@ -10,12 +10,14 @@ import { UserInput } from "../components/UserInput";
 import { mockConversation } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
+import styles from "./styles.module.css";
 
 export const Chat = () => {
   const [conversation, setConversation] =
     useState<ConversationEntry[]>(mockConversation);
   const [isMessageGenerating, setIsMessageGenerating] = useState(false);
   const [isMessageRequestSent, setIsMessageRequestSent] = useState(false);
+  const [isGutterVisible, setIsGutterVisible] = useState(false);
   const [userId, setUserId] = useState("");
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
@@ -85,6 +87,7 @@ export const Chat = () => {
   };
 
   const handleUserMessageSubmit = (message: string) => {
+    setIsGutterVisible(true);
     setConversation((state) => [
       ...state,
       {
@@ -99,8 +102,13 @@ export const Chat = () => {
   return (
     <div className="flex flex-col h-full max-w-[780px] m-0 mx-auto">
       <Header className={classNames("fixed top-0 left-0 w-full")} />
-      <div className="flex-grow flex flex-col overflow-y-auto">
-        <div className="flex flex-col flex-grow gap-[31px] py-[24px] pt-[100px]">
+      <div
+        className={classNames(
+          "flex-grow flex flex-col overflow-y-auto no-scrollbar py-[100px]",
+          styles.noScrollbar
+        )}
+      >
+        <div className="flex flex-col flex-grow gap-[31px]">
           {conversation.map((entry) => (
             <Message
               text={entry.message}
@@ -128,10 +136,17 @@ export const Chat = () => {
             />
           </div>
         )}
-        <div ref={endOfMessagesRef} />
+        <div
+          ref={endOfMessagesRef}
+          className="shrink-0"
+          style={{ height: isGutterVisible ? "calc(100vh - 280px)" : "" }}
+        />
       </div>
       <UserInput
-        className="mt-auto p-m pt-[1px]"
+        className={classNames(
+          "fixed bottom-0 left-0 p-m pt-[1px] w-full",
+          styles.inputContainerBackdrop
+        )}
         isDisabled={isMessageRequestSent || isMessageGenerating}
         onSubmit={handleUserMessageSubmit}
       />

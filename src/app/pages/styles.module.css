@@ -1,0 +1,12 @@
+.noScrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.noScrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.inputContainerBackdrop {
+  backdrop-filter: blur(10px);
+  background: rgb(255 255 255 / 80%);
+}

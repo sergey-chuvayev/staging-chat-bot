@@ -62,10 +62,10 @@ export const mockConversation: ConversationEntry[] = [
     speaker: "user",
     date: new Date(),
   },
-  {
-    message:
-      "You're welcome! Remember, I'm here to help you navigate your vitiligo journey. Feel free to ask any more questions.",
-    speaker: "bot",
-    date: new Date(),
-  },
+  // {
+  //   message:
+  //     "You're welcome! Remember, I'm here to help you navigate your vitiligo journey. Feel free to ask any more questions.",
+  //   speaker: "bot",
+  //   date: new Date(),
+  // },
 ];
