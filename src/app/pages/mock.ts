@@ -69,3 +69,11 @@ export const mockConversation: ConversationEntry[] = [
   //   date: new Date(),
   // },
 ];
+export const mockConversationWelcome: ConversationEntry[] = [
+  {
+    message:
+      "Hi, I’m Kuido. You can ask me anything and I’ll do my best to help you. What do you want to know ?",
+    speaker: "bot",
+    date: new Date(),
+  },
+];

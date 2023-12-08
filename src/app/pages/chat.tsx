@@ -7,20 +7,29 @@ import { Message } from "../components/Message";
 import { ConversationEntry } from "../types/chat";
 import { MessageGenerator } from "../components/MessageGenerator/MessageGenerator";
 import { UserInput } from "../components/UserInput";
-import { mockConversation } from "./mock";
+import { mockConversationWelcome } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
 import styles from "./styles.module.css";
 
 export const Chat = () => {
   const [conversation, setConversation] =
-    useState<ConversationEntry[]>(mockConversation);
+    useState<ConversationEntry[]>(mockConversationWelcome);
   const [isMessageGenerating, setIsMessageGenerating] = useState(false);
   const [isMessageRequestSent, setIsMessageRequestSent] = useState(false);
   const [isGutterVisible, setIsGutterVisible] = useState(false);
   const [userId, setUserId] = useState("");
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
+  const [updatedText, setUpdatedText] = useState("");
+
+  useEffect(() => {
+    fetch(
+      `https://chat-vitiligo.onrender.com/question.ask?from=${new Date()}`
+    ).then((res) => {
+      console.log(res);
+    });
+  }, []);
 
   useEffect(() => {
     setUserId(localStorage.getItem("userId") ?? "");
@@ -29,7 +38,7 @@ export const Chat = () => {
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation]);
+  }, [conversation, updatedText]);
 
   const submit = async (message: string) => {
     setError(null);
@@ -100,7 +109,7 @@ export const Chat = () => {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-[780px] m-0 mx-auto">
+    <div className="flex flex-col h-full max-w-[780px] m-0 mx-aut bg-pastel1 m-0 mx-auto">
       <Header className={classNames("fixed top-0 left-0 w-full")} />
       <div
         className={classNames(
@@ -108,7 +117,7 @@ export const Chat = () => {
           styles.noScrollbar
         )}
       >
-        <div className="flex flex-col flex-grow gap-[31px]">
+        <div className="flex flex-col flex-grow gap-[10px]">
           {conversation.map((entry) => (
             <Message
               text={entry.message}
@@ -117,13 +126,19 @@ export const Chat = () => {
               key={Math.random().toString()}
             />
           ))}
-          {isMessageRequestSent && <TypingIndicator className="ml-[24px]" />}
+          {isMessageRequestSent && (
+            <TypingIndicator
+              className="ml-[36px]"
+              isVisible={isMessageRequestSent}
+            />
+          )}
           {isMessageGenerating && (
             <MessageGenerator
               className="mx-[24px]"
               userId={userId}
               onError={setError}
               onMessageEnded={handleMessageEnded}
+              onMessageUpdated={setUpdatedText}
             />
           )}
         </div>
@@ -139,7 +154,7 @@ export const Chat = () => {
         <div
           ref={endOfMessagesRef}
           className="shrink-0"
-          style={{ height: isGutterVisible ? "calc(100vh - 280px)" : "" }}
+        // style={{ height: isGutterVisible ? "calc(100vh - 300px)" : "" }}
         />
       </div>
       <UserInput

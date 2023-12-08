@@ -15,6 +15,7 @@ type Props = {
   userId: string;
   className?: string;
   onMessageEnded(message: string): void;
+  onMessageUpdated(text: string): void;
   onError(reason: string): void;
 };
 
@@ -22,6 +23,7 @@ export const MessageGenerator = ({
   userId,
   className,
   onMessageEnded,
+  onMessageUpdated,
   onError,
 }: Props) => {
   const [text, setText] = useState("");
@@ -46,6 +48,8 @@ export const MessageGenerator = ({
   }, [text]);
 
   const handleMessageUpdated = (payload: StreamPayload) => {
+    console.log("MessageGenerator: handleMessageUpdated", payload);
+    onMessageUpdated(payload.payload.message);
     const newMessage = payload.payload.message;
     setText(newMessage);
     if (payload.payload.eventType === "responseEnd") {
@@ -60,7 +64,7 @@ export const MessageGenerator = ({
 
   return (
     <div
-      className={classNames("max-w-[85%] self-start text-[18px]", className)}
+      className={classNames("max-w-[85%] self-start text-[16px] py-[10px] px-[15px]", className)}
     >
       <Markdown components={{ p: FadeIn, li: FadeIn, a: FadeIn }}>
         {segments.join("")}

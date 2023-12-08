@@ -25,9 +25,9 @@ export const Message = ({ text, speaker, className }: Props) => {
       className={classNames(
         className,
         styles.message,
-        "body-l text-[#181818] text-[18px]",
+        "body-l text-dark text-[16px] py-[10px] px-[15px]",
         {
-          "rounded-[8px] bg-[#d5d5d5] max-w-[70%] self-end py-[10px] px-[15px]":
+          "rounded-[8px] bg-pastel2 max-w-[70%] self-end py-[10px] px-[15px]":
             speaker === "user",
         },
         {
