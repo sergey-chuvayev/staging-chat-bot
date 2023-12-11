@@ -36,12 +36,11 @@ type Props = {
 
 export const Chat = ({ userId }: Props) => {
   const [conversation, setConversation] = useState<ConversationEntry[]>([]);
-  const [isMessageGenerating, setIsMessageGenerating] = useState(false);
-  const [isMessageRequestSent, setIsMessageRequestSent] = useState(false);
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
   const [text, setText] = useState("");
   const [isTypingIndicatorDisplayed, setIsTypingIndicatorDisplayed] = useState(false);
+  const [isMessageGenerating, setIsMessageGenerating] = useState(false);
 
   useEffect(() => {
     fetch(`https://chat-vitiligo.onrender.com/chat.get?from=${userId}`).then(
@@ -86,7 +85,6 @@ export const Chat = ({ userId }: Props) => {
   const handleMessageUpdated = (payload: StreamPayload) => {
     setText(payload.payload.message);
     if (payload.payload.eventType === "responseEnd") {
-      setIsMessageGenerating(false);
       setConversation((state) => [
         ...state,
         {
@@ -104,7 +102,7 @@ export const Chat = ({ userId }: Props) => {
 
   const submit = async (message: string) => {
     setError(null);
-    setIsMessageRequestSent(true);
+    setIsTypingIndicatorDisplayed(true);
     try {
       const response = await fetch(
         "https://chat-vitiligo.onrender.com/question.ask",
@@ -121,22 +119,21 @@ export const Chat = ({ userId }: Props) => {
         }
       );
 
-      setIsMessageRequestSent(false);
-      setIsMessageGenerating(true);
+      setIsTypingIndicatorDisplayed(false);
 
       if (response.status === 500) {
-        setIsMessageRequestSent(false);
+        setIsTypingIndicatorDisplayed(false);
         setError("Server error: Please try again later.");
         return;
       }
 
       if (!response.ok) {
-        setIsMessageRequestSent(false);
+        setIsTypingIndicatorDisplayed(false);
         setError("Something went wrong. Please try again.");
         return;
       }
     } catch (error) {
-      setIsMessageRequestSent(false);
+      setIsTypingIndicatorDisplayed(false);
       setError(
         "Failed to send the message. Please check your internet connection and try again."
       );
@@ -207,7 +204,7 @@ export const Chat = ({ userId }: Props) => {
           "fixed bottom-0 left-0 p-m pb-0 pt-[1px] w-full",
           styles.inputContainerBackdrop
         )}
-        isDisabled={isMessageRequestSent || isMessageGenerating}
+        isDisabled={false}
         onSubmit={handleUserMessageSubmit}
       />
     </div>
