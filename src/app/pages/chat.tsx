@@ -7,7 +7,7 @@ import { Message } from "../components/Message";
 import { ConversationEntry } from "../types/chat";
 import { MessageGenerator } from "../components/MessageGenerator/MessageGenerator";
 import { UserInput } from "../components/UserInput";
-import { mockConversationWelcome } from "./mock";
+import { mockConversationWelcome, mockConversation } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
 import styles from "./styles.module.css";
@@ -35,52 +35,52 @@ type Props = {
 };
 
 export const Chat = ({ userId }: Props) => {
-  const [conversation, setConversation] = useState<ConversationEntry[]>(mockConversationWelcome);
+  const [conversation, setConversation] = useState<ConversationEntry[]>(mockConversation);
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
   const [text, setText] = useState("");
   const [isTypingIndicatorDisplayed, setIsTypingIndicatorDisplayed] = useState(false);
   const [isMessageGenerating, setIsMessageGenerating] = useState(false);
 
-  useEffect(() => {
-    fetch(`https://chat-vitiligo.onrender.com/chat.get?from=${userId}`).then(
-      (response) => {
-        response.json().then((data: History) => {
-          if (data.chat.length === 0) {
-            setConversation(mockConversationWelcome);
-          } else {
-            setConversation(
-              data.chat.slice(-NUMBER_OF_MESSAGES).map((entry) => ({
-                id: entry.id,
-                message: entry.content,
-                speaker: entry.from === "ai" ? "bot" : "user",
-                date: new Date(entry.created_at),
-              }))
-            );
-          }
-        });
-      }
-    );
-  }, []);
+  // useEffect(() => {
+  //   fetch(`https://chat-vitiligo.onrender.com/chat.get?from=${userId}`).then(
+  //     (response) => {
+  //       response.json().then((data: History) => {
+  //         if (data.chat.length === 0) {
+  //           setConversation(mockConversationWelcome);
+  //         } else {
+  //           setConversation(
+  //             data.chat.slice(-NUMBER_OF_MESSAGES).map((entry) => ({
+  //               id: entry.id,
+  //               message: entry.content,
+  //               speaker: entry.from === "ai" ? "bot" : "user",
+  //               date: new Date(entry.created_at),
+  //             }))
+  //           );
+  //         }
+  //       });
+  //     }
+  //   );
+  // }, []);
 
-  useEffect(() => {
-    const subscription = supabase
-      .channel(userId)
-      .on("broadcast", { event: "chat" }, handleMessageUpdated)
-      .subscribe();
+  // useEffect(() => {
+  //   const subscription = supabase
+  //     .channel(userId)
+  //     .on("broadcast", { event: "chat" }, handleMessageUpdated)
+  //     .subscribe();
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, []);
 
-  useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  // useEffect(() => {
+  //   endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, []);
 
-  useEffect(() => {
-    endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation, text]);
+  // useEffect(() => {
+  //   endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [conversation, text]);
 
   const handleMessageUpdated = (payload: StreamPayload) => {
     setText(payload.payload.message);
@@ -102,46 +102,45 @@ export const Chat = ({ userId }: Props) => {
 
   const submit = async (message: string) => {
     setError(null);
-    try {
-      const response = await fetch(
-        "https://chat-vitiligo.onrender.com/question.ask",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chatType: "streamed",
-            content: message,
-            from: userId, // generate some name (not authentication yet)
-          }),
-        }
-      );
+    // try {
+    //   const response = await fetch(
+    //     "https://chat-vitiligo.onrender.com/question.ask",
+    //     {
+    //       method: "POST",
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //       },
+    //       body: JSON.stringify({
+    //         chatType: "streamed",
+    //         content: message,
+    //         from: userId, // generate some name (not authentication yet)
+    //       }),
+    //     }
+    //   );
 
-      setIsTypingIndicatorDisplayed(false);
+    //   setIsTypingIndicatorDisplayed(false);
 
-      if (response.status === 500) {
-        setIsTypingIndicatorDisplayed(false);
-        setError("Server error: Please try again later.");
-        return;
-      }
+    //   if (response.status === 500) {
+    //     setIsTypingIndicatorDisplayed(false);
+    //     setError("Server error: Please try again later.");
+    //     return;
+    //   }
 
-      if (!response.ok) {
-        setIsTypingIndicatorDisplayed(false);
-        setError("Something went wrong. Please try again.");
-        return;
-      }
-    } catch (error) {
-      setIsTypingIndicatorDisplayed(false);
-      setError(
-        "Failed to send the message. Please check your internet connection and try again."
-      );
-      console.error("Error submitting message:", error);
-    }
+    //   if (!response.ok) {
+    //     setIsTypingIndicatorDisplayed(false);
+    //     setError("Something went wrong. Please try again.");
+    //     return;
+    //   }
+    // } catch (error) {
+    //   setIsTypingIndicatorDisplayed(false);
+    //   setError(
+    //     "Failed to send the message. Please check your internet connection and try again."
+    //   );
+    //   console.error("Error submitting message:", error);
+    // }
   };
 
   const handleUserMessageSubmit = (message: string) => {
-    setIsTypingIndicatorDisplayed(true);
     setConversation((state) => [
       ...state,
       {
@@ -150,7 +149,7 @@ export const Chat = ({ userId }: Props) => {
         date: new Date(),
       },
     ]);
-    submit(message);
+    // submit(message);
   };
 
   return (
