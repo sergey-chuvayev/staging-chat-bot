@@ -1,73 +1,24 @@
 import { ReactChildren, ReactNode, useEffect, useState } from "react";
-import { supabase } from "../../utils/supabase";
 
 import styles from "./MessageGenerator.module.css";
 import classNames from "classnames";
 import Markdown from "react-markdown";
 
-type StreamPayload = {
-  [key: string]: any;
-  type: "broadcast";
-  event: string;
-};
-
 type Props = {
-  userId: string;
   className?: string;
-  onMessageEnded(message: string): void;
-  onMessageUpdated(text: string): void;
-  onError(reason: string): void;
+  message: string;
 };
 
 export const MessageGenerator = ({
-  userId,
   className,
-  onMessageEnded,
-  onMessageUpdated,
-  onError,
+  message,
 }: Props) => {
-  const [text, setText] = useState("");
-  const [segments, setSegments] = useState<string[]>([]);
-
-  useEffect(() => {
-    const subscription = supabase
-      .channel(userId)
-      .on("broadcast", { event: "chat" }, handleMessageUpdated)
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (text) {
-      const newSegment = text.replace(segments.join(""), "");
-      setSegments((prevSegments) => [...prevSegments, newSegment]);
-    }
-  }, [text]);
-
-  const handleMessageUpdated = (payload: StreamPayload) => {
-    console.log("MessageGenerator: handleMessageUpdated", payload);
-    onMessageUpdated(payload.payload.message);
-    const newMessage = payload.payload.message;
-    setText(newMessage);
-    if (payload.payload.eventType === "responseEnd") {
-      const newSegment = newMessage.replace(segments.join(""), "");
-      setSegments((prevSegments) => [...prevSegments, newSegment]);
-      onMessageEnded(newMessage);
-    }
-    if (payload.payload.status === "error") {
-      onError("Something went wrong. Please try again.");
-    }
-  };
-
   return (
     <div
-      className={classNames("max-w-[85%] self-start text-[16px] py-[10px] px-[15px]", className)}
+      className={classNames("max-w-[85%] self-start text-[16px] py-[10px] px-[15px] text-dark", className)}
     >
       <Markdown components={{ p: FadeIn, li: FadeIn, a: FadeIn }}>
-        {segments.join("")}
+        {message}
       </Markdown>
     </div >
   );

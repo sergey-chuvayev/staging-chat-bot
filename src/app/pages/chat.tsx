@@ -11,34 +11,96 @@ import { mockConversationWelcome } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
 import styles from "./styles.module.css";
+import { supabase } from "../utils/supabase";
 
-export const Chat = () => {
-  const [conversation, setConversation] =
-    useState<ConversationEntry[]>(mockConversationWelcome);
+const NUMBER_OF_MESSAGES = 20;
+
+type StreamPayload = {
+  [key: string]: any;
+  type: "broadcast";
+  event: string;
+};
+
+type History = {
+  chat: {
+    id: string;
+    content: string;
+    created_at: string;
+    from: "ai" | string;
+  }[];
+};
+
+type Props = {
+  userId: string;
+};
+
+export const Chat = ({ userId }: Props) => {
+  const [conversation, setConversation] = useState<ConversationEntry[]>([]);
   const [isMessageGenerating, setIsMessageGenerating] = useState(false);
   const [isMessageRequestSent, setIsMessageRequestSent] = useState(false);
-  const [isGutterVisible, setIsGutterVisible] = useState(false);
-  const [userId, setUserId] = useState("");
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
-  const [updatedText, setUpdatedText] = useState("");
+  const [text, setText] = useState("");
+  const [isTypingIndicatorDisplayed, setIsTypingIndicatorDisplayed] = useState(false);
 
   useEffect(() => {
-    fetch(
-      `https://chat-vitiligo.onrender.com/question.ask?from=${new Date()}`
-    ).then((res) => {
-      console.log(res);
-    });
+    fetch(`https://chat-vitiligo.onrender.com/chat.get?from=${userId}`).then(
+      (response) => {
+        response.json().then((data: History) => {
+          if (data.chat.length === 0) {
+            setConversation(mockConversationWelcome);
+          } else {
+            setConversation(
+              data.chat.slice(-NUMBER_OF_MESSAGES).map((entry) => ({
+                id: entry.id,
+                message: entry.content,
+                speaker: entry.from === "ai" ? "bot" : "user",
+                date: new Date(entry.created_at),
+              }))
+            );
+          }
+        });
+      }
+    );
   }, []);
 
   useEffect(() => {
-    setUserId(localStorage.getItem("userId") ?? "");
+    const subscription = supabase
+      .channel(userId)
+      .on("broadcast", { event: "chat" }, handleMessageUpdated)
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation, updatedText]);
+  }, [conversation, text]);
+
+  const handleMessageUpdated = (payload: StreamPayload) => {
+    setText(payload.payload.message);
+    if (payload.payload.eventType === "responseEnd") {
+      setIsMessageGenerating(false);
+      setConversation((state) => [
+        ...state,
+        {
+          id: Math.random().toString(), // TODO: use the ID from the server
+          message: payload.payload.message,
+          speaker: "bot",
+          date: new Date(),
+        },
+      ]);
+    }
+    if (payload.payload.status === "error") {
+      setError("Something went wrong. Please try again.");
+    }
+  };
 
   const submit = async (message: string) => {
     setError(null);
@@ -82,21 +144,7 @@ export const Chat = () => {
     }
   };
 
-  const handleMessageEnded = (message: string) => {
-    setConversation((state) => [
-      ...state,
-      {
-        id: Math.random().toString(), // TODO: use the ID from the server
-        message,
-        speaker: "bot",
-        date: new Date(),
-      },
-    ]);
-    setIsMessageGenerating(false);
-  };
-
   const handleUserMessageSubmit = (message: string) => {
-    setIsGutterVisible(true);
     setConversation((state) => [
       ...state,
       {
@@ -126,21 +174,18 @@ export const Chat = () => {
               key={Math.random().toString()}
             />
           ))}
-          {isMessageRequestSent && (
+          {isTypingIndicatorDisplayed && (
             <TypingIndicator
               className="ml-[36px]"
-              isVisible={isMessageRequestSent}
+              isVisible={isTypingIndicatorDisplayed}
             />
           )}
-          {isMessageGenerating && (
-            <MessageGenerator
-              className="mx-[24px]"
-              userId={userId}
-              onError={setError}
-              onMessageEnded={handleMessageEnded}
-              onMessageUpdated={setUpdatedText}
-            />
-          )}
+          {/* {isMessageGenerating && (
+            <div>
+              message generator {JSON.stringify(isMessageGenerating)}
+              <MessageGenerator className="mx-[24px]" message={text} />
+            </div>
+          )} */}
         </div>
         {error && (
           <div className="flex flex-row justify-center">
@@ -159,7 +204,7 @@ export const Chat = () => {
       </div>
       <UserInput
         className={classNames(
-          "fixed bottom-0 left-0 p-m pt-[1px] w-full",
+          "fixed bottom-0 left-0 p-m pb-0 pt-[1px] w-full",
           styles.inputContainerBackdrop
         )}
         isDisabled={isMessageRequestSent || isMessageGenerating}
