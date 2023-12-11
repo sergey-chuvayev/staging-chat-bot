@@ -32,6 +32,10 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
         <form
           id="chat-form"
           className="flex items-end rounded-[30px] border-[2px] border-[#E9D1BF] bg-white w-[740px]"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSubmit(text);
+          }}
         >
           <textarea
             className="flex-grow bg-transparent px-[15px] py-[11px] outline-none body-m text-dark"
@@ -52,7 +56,6 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
             }}
           />
           <button
-            onClick={() => handleSubmit(text)}
             className="pr-[14px] mb-[8px]"
             type="submit"
             disabled={isDisabled}

@@ -153,7 +153,7 @@ export const Chat = ({ userId }: Props) => {
   };
 
   return (
-    <div className="flex flex-col h-full max-w-[780px] m-0 mx-aut bg-pastel1 m-0 mx-auto">
+    <div className="flex flex-col h-[100vh] max-w-[780px] m-0 mx-aut bg-pastel1 m-0 mx-auto">
       <Header className={classNames("fixed top-0 left-0 w-full")} />
       <div
         className={classNames(
