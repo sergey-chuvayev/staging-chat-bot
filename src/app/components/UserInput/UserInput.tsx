@@ -85,7 +85,7 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
           </button>
         </form>
       </div>
-      <div className="z-10 relative text-dark text-[10px] text-center align-baseline m-xs opacity-[75%]">
+      <div className="z-10 relative text-dark text-[8px] text-center align-baseline m-xs opacity-[75%]">
         Kuido peut faire des erreurs, en cas de doute référez vous aux sources mentionnées
       </div>
     </div>
