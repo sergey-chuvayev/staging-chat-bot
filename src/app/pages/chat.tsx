@@ -116,7 +116,6 @@ export const Chat = ({ userId }: Props) => {
           date: new Date(resp.answer.created_at),
         },
       ]);
-      // TODO: ADD message here
     }).catch((error) => {
       setError(
         "Failed to send the message. Please check your internet connection and try again."
