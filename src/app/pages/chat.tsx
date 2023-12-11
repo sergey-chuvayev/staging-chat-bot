@@ -158,8 +158,9 @@ export const Chat = ({ userId }: Props) => {
       <Header className={classNames("sticky top-0 left-0 w-full")} />
       <div
         className={classNames(
-          "flex-grow flex flex-col overflow-y-auto no-scrollbar py-[100px] pt-0",
-          styles.noScrollbar
+          "flex-grow flex flex-col overflow-y-auto no-scrollbar py-[100px]",
+          styles.noScrollbar,
+          styles.chatContainer
         )}
       >
         <div className="flex flex-col flex-grow gap-[10px]">
