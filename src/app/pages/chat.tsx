@@ -171,6 +171,7 @@ export const Chat = ({ userId }: Props) => {
               key={Math.random().toString()}
             />
           ))}
+          {JSON.stringify(isTypingIndicatorDisplayed)}
           {isTypingIndicatorDisplayed && (
             <TypingIndicator
               className="ml-[36px]"
