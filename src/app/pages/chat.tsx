@@ -7,11 +7,10 @@ import { Message } from "../components/Message";
 import { ConversationEntry } from "../types/chat";
 import { MessageGenerator } from "../components/MessageGenerator/MessageGenerator";
 import { UserInput } from "../components/UserInput";
-import { mockConversationWelcome, mockConversation } from "./mock";
+import { mockConversationWelcome } from "./mock";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { Header } from "../components/Header";
 import styles from "./styles.module.css";
-import { supabase } from "../utils/supabase";
 
 const NUMBER_OF_MESSAGES = 20;
 
@@ -30,6 +29,14 @@ type History = {
   }[];
 };
 
+type RestAnswer = {
+  answer: {
+    content: string;
+    created_at: string;
+    from: "ai" | string;
+  };
+}
+
 type Props = {
   userId: string;
 };
@@ -38,9 +45,7 @@ export const Chat = ({ userId }: Props) => {
   const [conversation, setConversation] = useState<ConversationEntry[]>([]);
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
-  const [text, setText] = useState("");
   const [isTypingIndicatorDisplayed, setIsTypingIndicatorDisplayed] = useState(false);
-  const [isMessageGenerating, setIsMessageGenerating] = useState(false);
 
   useEffect(() => {
     fetch(`https://chat-vitiligo.onrender.com/chat.get?from=${userId}`).then(
@@ -63,16 +68,6 @@ export const Chat = ({ userId }: Props) => {
     );
   }, []);
 
-  useEffect(() => {
-    const subscription = supabase
-      .channel(userId)
-      .on("broadcast", { event: "chat" }, handleMessageUpdated)
-      .subscribe();
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -80,65 +75,55 @@ export const Chat = ({ userId }: Props) => {
 
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [conversation, text]);
+  }, [conversation]);
 
-  const handleMessageUpdated = (payload: StreamPayload) => {
-    setText(payload.payload.message);
-    if (payload.payload.eventType === "responseEnd") {
-      setConversation((state) => [
-        ...state,
-        {
-          id: Math.random().toString(), // TODO: use the ID from the server
-          message: payload.payload.message,
-          speaker: "bot",
-          date: new Date(),
-        },
-      ]);
-    }
-    if (payload.payload.status === "error") {
-      setError("Something went wrong. Please try again.");
-    }
-  };
 
   const submit = async (message: string) => {
     setError(null);
-    try {
-      setIsTypingIndicatorDisplayed(true);
-      const response = await fetch(
-        "https://chat-vitiligo.onrender.com/question.ask",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            chatType: "streamed",
-            content: message,
-            from: userId, // generate some name (not authentication yet)
-          }),
-        }
-      );
-
-      setIsTypingIndicatorDisplayed(false);
-
+    setIsTypingIndicatorDisplayed(true);
+    fetch(
+      "https://chat-vitiligo.onrender.com/question.ask",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chatType: "rest",
+          content: message,
+          from: userId,
+        }),
+      }
+    ).then((response) => {
       if (response.status === 500) {
         setIsTypingIndicatorDisplayed(false);
         setError("Server error: Please try again later.");
         return;
       }
-
       if (!response.ok) {
         setIsTypingIndicatorDisplayed(false);
         setError("Something went wrong. Please try again.");
         return;
       }
-    } catch (error) {
       setIsTypingIndicatorDisplayed(false);
+      return response.json();
+    }).then((resp: RestAnswer) => {
+      setConversation((state) => [
+        ...state,
+        {
+          message: resp.answer.content,
+          speaker: 'bot',
+          date: new Date(resp.answer.created_at),
+        },
+      ]);
+      // TODO: ADD message here
+    }).catch((error) => {
       setError(
         "Failed to send the message. Please check your internet connection and try again."
       );
       console.error("Error submitting message:", error);
-    }
+    });
+
   };
 
   const handleUserMessageSubmit = (message: string) => {
@@ -179,10 +164,7 @@ export const Chat = ({ userId }: Props) => {
             />
           )}
           {/* {isMessageGenerating && (
-            <div>
-              message generator {JSON.stringify(isMessageGenerating)}
-              <MessageGenerator className="mx-[24px]" message={text} />
-            </div>
+            <MessageGenerator className="mx-[24px]" message={text} />
           )} */}
         </div>
         {error && (

@@ -72,7 +72,7 @@ export const mockConversation: ConversationEntry[] = [
 export const mockConversationWelcome: ConversationEntry[] = [
   {
     message:
-      "Bonjour, je suis Kuido. Vous pouvez me demander n'importe quoi et je ferai de mon mieux pour vous aider. Que souhaitez-vous savoir ?",
+      "Bonjour, je suis Kuido. Comment puis-je vous aider aujourd'hui en ce qui concerne le vitiligo ?",
     speaker: "bot",
     date: new Date(),
   },
