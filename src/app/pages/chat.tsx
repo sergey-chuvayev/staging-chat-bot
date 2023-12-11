@@ -154,8 +154,8 @@ export const Chat = ({ userId }: Props) => {
   };
 
   return (
-    <div className="flex flex-col h-[100vh] max-w-[780px] m-0 mx-aut bg-pastel1 m-0 mx-auto">
-      <Header className={classNames("fixed top-0 left-0 w-full")} />
+    <div className="flex flex-col touch-manipulation h-[100vh] max-w-[780px] m-0 mx-aut bg-pastel1 m-0 mx-auto">
+      <Header className={classNames("sticky top-0 left-0 w-full")} />
       <div
         className={classNames(
           "flex-grow flex flex-col overflow-y-auto no-scrollbar py-[100px]",
@@ -201,7 +201,7 @@ export const Chat = ({ userId }: Props) => {
       </div>
       <UserInput
         className={classNames(
-          "fixed bottom-0 left-0 p-m pb-0 pt-[1px] w-full",
+          "sticky bottom-0 left-0 p-m pb-0 pt-[1px] w-full",
           styles.inputContainerBackdrop
         )}
         isDisabled={false}
