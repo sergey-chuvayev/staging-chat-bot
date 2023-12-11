@@ -35,7 +35,7 @@ type Props = {
 };
 
 export const Chat = ({ userId }: Props) => {
-  const [conversation, setConversation] = useState<ConversationEntry[]>([]);
+  const [conversation, setConversation] = useState<ConversationEntry[]>(mockConversationWelcome);
   const [error, setError] = useState<null | string>(null);
   const endOfMessagesRef = useRef<HTMLDivElement | null>(null);
   const [text, setText] = useState("");
