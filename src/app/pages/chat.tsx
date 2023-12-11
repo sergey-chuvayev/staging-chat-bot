@@ -103,6 +103,7 @@ export const Chat = ({ userId }: Props) => {
   const submit = async (message: string) => {
     setError(null);
     try {
+      setIsTypingIndicatorDisplayed(true);
       const response = await fetch(
         "https://chat-vitiligo.onrender.com/question.ask",
         {
@@ -170,7 +171,6 @@ export const Chat = ({ userId }: Props) => {
               key={Math.random().toString()}
             />
           ))}
-          {JSON.stringify(isTypingIndicatorDisplayed)}
           {isTypingIndicatorDisplayed && (
             <TypingIndicator
               className="ml-[36px]"
