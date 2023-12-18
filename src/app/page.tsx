@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <div>
       <PostHogProvider
-        apiKey="phc_cLwmD9OTctldzah310twDK3Ey14ChUHdGvYyh9fZjK9"
+        apiKey={process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY}
         options={options}
       >
         {userId && <Chat userId={userId} />}
