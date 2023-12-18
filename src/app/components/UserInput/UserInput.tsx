@@ -1,3 +1,4 @@
+import { usePostHog } from "posthog-js/react";
 import { useState } from "react";
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 
 export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
   const [text, setText] = useState("");
+  const posthog = usePostHog();
 
   const adjustTextAreaRows = (textarea: HTMLTextAreaElement) => {
     const maxRows = 5;
@@ -22,6 +24,8 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
 
   const handleSubmit = (text: string) => {
     if (!text) return;
+
+    posthog.capture("MESSAGE_SENT", { text });
     onSubmit(text);
     setText("");
   };
