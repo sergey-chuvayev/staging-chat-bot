@@ -22,9 +22,6 @@ export default function Home() {
     }
   }, []);
 
-  console.log(process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY);
-
-
   return (
     <div>
       <PostHogProvider
