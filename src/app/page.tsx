@@ -4,6 +4,7 @@ import { v4 } from "uuid";
 
 import { Chat } from "./pages/chat";
 import { PostHogProvider } from "posthog-js/react";
+import { Onboarding } from "./components/Onboarding";
 
 const options = {
   api_host: process.env.REACT_APP_PUBLIC_POSTHOG_HOST,
@@ -22,14 +23,23 @@ export default function Home() {
     }
   }, []);
 
+  const content = (
+    <>
+      {userId && <Chat userId={userId} />}
+      {/* <Onboarding /> */}
+    </>
+  );
+
+  if (process.env.NODE_ENV === "development") {
+    return content;
+  }
+
   return (
-    <div>
-      <PostHogProvider
-        apiKey={process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY}
-        options={options}
-      >
-        {userId && <Chat userId={userId} />}
-      </PostHogProvider>
-    </div>
+    <PostHogProvider
+      apiKey={process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY}
+      options={options}
+    >
+      {content}
+    </PostHogProvider>
   );
 }

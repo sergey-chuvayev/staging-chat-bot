@@ -1,9 +1,10 @@
-import Slide1 from './slide1.svg';
+import Slide1 from './Slide1.svg';
 
 export const Onboarding = () => {
   return (
-    <div className="w-full h-[100vh]" style={{ background: Slide1 }}>
-
+    <div className="w-full h-[100vh]">
+      <Slide1 />
     </div>
-  )
-}
+  );
+};
+
