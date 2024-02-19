@@ -25,8 +25,8 @@ export default function Home() {
 
   const content = (
     <>
-      {userId && <Chat userId={userId} />}
-      {/* <Onboarding /> */}
+      {/* {userId && <Chat userId={userId} />} */}
+      <Onboarding />
     </>
   );
 
