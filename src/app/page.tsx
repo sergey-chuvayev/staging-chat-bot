@@ -12,6 +12,7 @@ const options = {
 
 export default function Home() {
   const [userId, setUserId] = useState<string | undefined>();
+  const [showOnboarding, setShowOnboarding] = useState(true);
   useEffect(() => {
     // set the user id, if not set, generate a new one and display the weclome onboarding
     const generatedUserId = v4();
@@ -23,12 +24,7 @@ export default function Home() {
     }
   }, []);
 
-  const content = (
-    <>
-      {/* {userId && <Chat userId={userId} />} */}
-      <Onboarding />
-    </>
-  );
+  const content = <>{userId && <Chat userId={userId} />}</>;
 
   if (process.env.NODE_ENV === "development") {
     return content;
@@ -39,7 +35,11 @@ export default function Home() {
       apiKey={process.env.NEXT_PUBLIC_PUBLIC_POSTHOG_KEY}
       options={options}
     >
-      {content}
+      {showOnboarding ? (
+        <Onboarding onChatStartButtonClicked={() => setShowOnboarding(false)} />
+      ) : (
+        content
+      )}
     </PostHogProvider>
   );
 }

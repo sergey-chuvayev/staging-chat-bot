@@ -6,7 +6,11 @@ import { useRef, useState } from "react";
 
 const slides = ["/Slide_1.svg", "/Slide_2.svg", "/Slide_3.svg", "/Slide_4.svg"];
 
-export const Onboarding = () => {
+type Props = {
+  onChatStartButtonClicked: () => void;
+};
+
+export const Onboarding = ({ onChatStartButtonClicked }: Props) => {
   const carousel = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -124,6 +128,7 @@ export const Onboarding = () => {
 
           <div className="px-[22px] pb-[22px]">
             <button
+              onClick={onChatStartButtonClicked}
               className={classNames(
                 "bg-dark text-white w-full p-[12px]",
                 style.button
