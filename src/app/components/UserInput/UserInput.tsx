@@ -1,5 +1,5 @@
 import { usePostHog } from "posthog-js/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type Props = {
   isDisabled: boolean;
@@ -10,6 +10,7 @@ type Props = {
 export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
   const [text, setText] = useState("");
   const posthog = usePostHog();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const adjustTextAreaRows = (textarea: HTMLTextAreaElement) => {
     const maxRows = 5;
@@ -27,6 +28,9 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
 
     posthog.capture("MESSAGE_SENT", { text });
     onSubmit(text);
+    if (textareaRef.current) {
+      textareaRef.current.rows = 1;
+    }
     setText("");
   };
 
@@ -46,6 +50,7 @@ export const UserInput = ({ isDisabled, onSubmit, className }: Props) => {
             form="chat-form"
             placeholder="Message..."
             value={text}
+            ref={textareaRef}
             rows={1}
             style={{ resize: "none" }} // Disables manual resizing
             onChange={(event) => {

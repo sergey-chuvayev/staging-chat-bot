@@ -24,11 +24,7 @@ export default function Home() {
     }
   }, []);
 
-  const content = <>{userId && <Chat userId={userId} />}</>;
-
-  if (process.env.NODE_ENV === "development") {
-    return content;
-  }
+  const chatPage = <>{userId && <Chat userId={userId} />}</>;
 
   return (
     <PostHogProvider
@@ -38,7 +34,7 @@ export default function Home() {
       {showOnboarding ? (
         <Onboarding onChatStartButtonClicked={() => setShowOnboarding(false)} />
       ) : (
-        content
+        chatPage
       )}
     </PostHogProvider>
   );
